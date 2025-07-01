@@ -8,8 +8,13 @@ const BLOCK_EXPLORER_URL = hyperliquid.blockExplorers.default.url.substring(8)
 const MARKETPLACE_URL = drip.url.substring(8)
 
 const client = new TwitterApi({
-  // FILL THIS IN!
+  appKey: process.env.API_KEY,
+  appSecret: process.env.API_SECRET,
+  accessToken: process.env.ACCESS_TOKEN,
+  accessSecret: process.env.ACCESS_SECRET,
 })
+
+const readWriteClient = client.readWrite
 
 export const postOnX = async (data: PostData) => {
   const name = data.tokenData.name
@@ -34,9 +39,9 @@ export const postOnX = async (data: PostData) => {
   ]
   const text = lines.join('\n')
   const image = data.tokenData.image
-  const mediaIds = await Promise.all([client.v1.uploadMedia(image)])
+  const mediaIds = await Promise.all([readWriteClient.v1.uploadMedia(image)])
   const {
     data: { id },
-  } = await client.v2.tweet({ text, media: { media_ids: mediaIds } })
+  } = await readWriteClient.v2.tweet({ text, media: { media_ids: mediaIds } })
   console.log(`Posted on X: ${id}`)
 }
