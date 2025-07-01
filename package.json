@@ -10,6 +10,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "bottleneck": "^2.19.5",
     "twitter-api-v2": "^1.24.0",
     "viem": "^2.31.6"
   }
