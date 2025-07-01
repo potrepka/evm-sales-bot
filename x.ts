@@ -2,12 +2,14 @@ import Bottleneck from 'bottleneck'
 import { fileTypeFromBuffer } from 'file-type'
 import { EUploadMimeType, TwitterApi } from 'twitter-api-v2'
 import { hyperliquid } from './chains'
-import { abbreviateAddress } from './helpers'
+import { abbreviateAddress, getMaximum } from './helpers'
 import { drip } from './marketplaces'
 import type { PostData } from './types'
 
 const BLOCK_EXPLORER_URL = hyperliquid.blockExplorers.default.url.substring(8)
 const MARKETPLACE_URL = drip.url.substring(8)
+
+const queue: PostData[] = []
 
 const client = new TwitterApi({
   // @ts-ignore
@@ -28,7 +30,14 @@ const testAuth = async () => {
 
 testAuth()
 
-const post = async (data: PostData) => {
+export const addToQueue = (data: PostData) => queue.push(data)
+
+const post = async () => {
+  const data = getMaximum(queue)
+  if (!data) {
+    return
+  }
+  queue.length = 0
   const name = data.tokenData.name
   const price = Number(data.pricePerItem / BigInt(1e15)) / 1e3
   const unit = data.paymentToken
@@ -67,6 +76,12 @@ const post = async (data: PostData) => {
 
 const limiter = new Bottleneck({
   minTime: Number(process.env.X_RATE_LIMIT_INTERVAL),
+  highWater: 1,
 })
 
-export const postOnX = limiter.wrap((data: PostData) => post(data))
+export const postLimited = limiter.wrap(post)
+
+export const postOnX = (data: PostData) => {
+  addToQueue(data)
+  postLimited()
+}

@@ -1,3 +1,5 @@
+import type { PostData } from './types'
+
 export const abbreviateAddress = (address: string) =>
   `${address.substring(0, 6)}...${address.substring(38)}`
 
@@ -11,3 +13,10 @@ export const downloadImage = async (imageUrl: string) => {
   const arrayBuffer = await response.arrayBuffer()
   return Buffer.from(arrayBuffer)
 }
+
+export const getMaximum = (queue: PostData[]) =>
+  queue.reduce(
+    (a: PostData | null, b: PostData) =>
+      a !== null && a.pricePerItem >= b.pricePerItem ? a : b,
+    null,
+  )
