@@ -10,7 +10,7 @@ import { hyperliquid } from './chains'
 import { ContractEvent } from './events'
 import { drip } from './marketplaces'
 import type { BidAcceptedLog, ItemSoldLog, PostData, TokenData } from './types'
-import { post as postOnX } from './x'
+import { postOnX } from './x'
 
 const client = createPublicClient({
   chain: hyperliquid,
