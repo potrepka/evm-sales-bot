@@ -10,13 +10,22 @@ const MARKETPLACE_URL = drip.url.substring(8)
 
 const client = new TwitterApi({
   // @ts-ignore
-  consumerToken: process.env.API_KEY,
-  consumerSecret: process.env.API_SECRET,
-  accessToken: process.env.ACCESS_TOKEN,
-  accessSecret: process.env.ACCESS_SECRET,
+  appKey: process.env.X_API_KEY,
+  appSecret: process.env.X_API_SECRET,
+  accessToken: process.env.X_ACCESS_TOKEN,
+  accessSecret: process.env.X_ACCESS_SECRET,
 })
 
 const readWriteClient = client.readWrite
+
+const testAuth = async () => {
+  const {
+    data: { username },
+  } = await readWriteClient.currentUserV2()
+  console.log('Authenticated:', username)
+}
+
+testAuth()
 
 const post = async (data: PostData) => {
   const name = data.tokenData.name
@@ -25,8 +34,8 @@ const post = async (data: PostData) => {
   const seller = abbreviateAddress(data.seller)
   const buyer = abbreviateAddress(data.buyer)
   const transactionLink = `${BLOCK_EXPLORER_URL}/tx/${data.transactionHash}`
-  const username = `@${process.env.NFT_X_USERNAME}`
-  const collectionLink = `${MARKETPLACE_URL}/collections/${process.env.NFT_DRIP_USERNAME}`
+  const mention = `@${process.env.NFT_X_USERNAME}`
+  const collectionLink = `${MARKETPLACE_URL}/collections/${process.env.NFT_MARKETPLACE_USERNAME}`
   const lines = [
     `🚨 ${name} just sold! 🚨`,
     '',
@@ -36,7 +45,7 @@ const post = async (data: PostData) => {
     '',
     `🔗 ${transactionLink}`,
     '',
-    username,
+    mention,
     collectionLink,
   ]
   const text = lines.join('\n')
@@ -49,8 +58,11 @@ const post = async (data: PostData) => {
     text,
     media: { media_ids: [mediaId] },
   })
-  const xLink = `https://x.com/${process.env.X_USERNAME}/status/${id}`
-  console.log(`Posted on X: ${xLink}`)
+  const {
+    data: { username },
+  } = await readWriteClient.currentUserV2()
+  const xLink = `https://x.com/${username}/status/${id}`
+  console.log('Posted on X:', xLink)
 }
 
 const limiter = new Bottleneck({
