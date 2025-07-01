@@ -37,9 +37,8 @@ const post = async (data: PostData) => {
   const mention = `@${process.env.NFT_X_USERNAME}`
   const collectionLink = `${MARKETPLACE_URL}/collections/${process.env.NFT_MARKETPLACE_USERNAME}`
   const lines = [
-    `🚨 ${name} just sold! 🚨`,
+    `🚨 ${name} was bought for 💰 ${price} $${unit}`,
     '',
-    `Price: ${price} ${unit}`,
     `Seller: ${seller}`,
     `Buyer: ${buyer}`,
     '',
