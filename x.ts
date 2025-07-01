@@ -89,9 +89,9 @@ const limiter = new Bottleneck({
 
 const postLimited = limiter.wrap(post)
 
-const postOnX = (data: PostData) => {
+const postOnX = async (data: PostData) => {
   addToQueue(data)
-  postLimited()
+  await postLimited()
 }
 
 export { checkAuthOnX, postOnX }

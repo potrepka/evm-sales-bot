@@ -18,10 +18,8 @@ const client = createPublicClient({
   transport: http(),
 })
 
-checkAuthOnX()
-
 const post = async (data: PostData) => {
-  postOnX(data)
+  await postOnX(data)
 }
 
 const getTokenData = async (nftAddress: Hash, tokenId: bigint) => {
@@ -57,9 +55,11 @@ const onLogs = (logs: Log[]) => {
       seller: args.seller as Hash,
       transactionHash: log.transactionHash as Hash,
     }
-    post(data)
+    await post(data)
   })
 }
+
+await checkAuthOnX()
 
 client.watchContractEvent({
   address: drip.contractAddress,
