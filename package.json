@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "bottleneck": "^2.19.5",
-    "got": "^14.4.7",
+    "file-type": "^21.0.0",
     "twitter-api-v2": "^1.24.0",
     "viem": "^2.31.6"
   }

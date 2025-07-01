@@ -1,4 +1,3 @@
-import got from 'got'
 import {
   createPublicClient,
   getContract,
@@ -9,6 +8,7 @@ import {
 import { nftAbi } from './abi/nft'
 import { hyperliquid } from './chains'
 import { ContractEvent } from './events'
+import { downloadImage } from './helpers'
 import { drip } from './marketplaces'
 import type { BidAcceptedLog, ItemSoldLog, PostData, TokenData } from './types'
 import { postOnX } from './x'
@@ -43,7 +43,7 @@ const onLogs = (logs: Log[]) => {
       args.nftAddress as Hash,
       args.tokenId as bigint,
     )
-    const imageData = await got(tokenData.image).buffer()
+    const imageData = await downloadImage(tokenData.image)
     const data = {
       nftAddress: args.nftAddress as Hash,
       tokenId: args.tokenId as bigint,

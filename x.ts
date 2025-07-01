@@ -1,4 +1,5 @@
 import Bottleneck from 'bottleneck'
+import { fileTypeFromBuffer } from 'file-type'
 import { EUploadMimeType, TwitterApi } from 'twitter-api-v2'
 import { hyperliquid } from './chains'
 import { abbreviateAddress } from './helpers'
@@ -48,9 +49,9 @@ const post = async (data: PostData) => {
     collectionLink,
   ]
   const text = lines.join('\n')
-  const mediaId = await client.v1.uploadMedia(data.imageData, {
-    mimeType: EUploadMimeType.Png,
-  })
+  const fileTypeResult = await fileTypeFromBuffer(data.imageData)
+  const mimeType = fileTypeResult?.mime || EUploadMimeType.Png
+  const mediaId = await client.v1.uploadMedia(data.imageData, { mimeType })
   const {
     data: { id },
   } = await readWriteClient.v2.tweet({
