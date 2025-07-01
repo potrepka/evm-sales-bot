@@ -21,23 +21,21 @@ const client = new TwitterApi({
 
 const readWriteClient = client.readWrite
 
-const testAuth = async () => {
+const getUsername = async () => {
   const {
     data: { username },
   } = await readWriteClient.currentUserV2()
-  console.log('Authenticated:', username)
+  return username
 }
 
-testAuth()
+const checkAuthOnX = async () => {
+  const username = await getUsername()
+  console.log('Authenticated:', `https://x.com/${username}`)
+}
 
-export const addToQueue = (data: PostData) => queue.push(data)
+const addToQueue = (data: PostData) => queue.push(data)
 
-const post = async () => {
-  const data = getMaximum(queue)
-  if (!data) {
-    return
-  }
-  queue.length = 0
+const buildText = (data: PostData) => {
   const name = data.tokenData.name
   const price = Number(data.pricePerItem / BigInt(1e15)) / 1e3
   const unit = data.paymentToken
@@ -57,21 +55,31 @@ const post = async () => {
     mention,
     collectionLink,
   ]
-  const text = lines.join('\n')
+  return lines.join('\n')
+}
+
+const uploadMedia = async (data: PostData) => {
   const fileTypeResult = await fileTypeFromBuffer(data.imageData)
   const mimeType = fileTypeResult?.mime || EUploadMimeType.Png
-  const mediaId = await client.v1.uploadMedia(data.imageData, { mimeType })
+  return await client.v1.uploadMedia(data.imageData, { mimeType })
+}
+
+const post = async () => {
+  const data = getMaximum(queue)
+  if (!data) {
+    return
+  }
+  queue.length = 0
+  const text = buildText(data)
+  const mediaId = await uploadMedia(data)
   const {
     data: { id },
   } = await readWriteClient.v2.tweet({
     text,
     media: { media_ids: [mediaId] },
   })
-  const {
-    data: { username },
-  } = await readWriteClient.currentUserV2()
-  const xLink = `https://x.com/${username}/status/${id}`
-  console.log('Posted on X:', xLink)
+  const username = await getUsername()
+  console.log('Posted on X:', `https://x.com/${username}/status/${id}`)
 }
 
 const limiter = new Bottleneck({
@@ -79,9 +87,11 @@ const limiter = new Bottleneck({
   highWater: 1,
 })
 
-export const postLimited = limiter.wrap(post)
+const postLimited = limiter.wrap(post)
 
-export const postOnX = (data: PostData) => {
+const postOnX = (data: PostData) => {
   addToQueue(data)
   postLimited()
 }
+
+export { checkAuthOnX, postOnX }

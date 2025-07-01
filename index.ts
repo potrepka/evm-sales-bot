@@ -11,15 +11,16 @@ import { ContractEvent } from './events'
 import { downloadImage } from './helpers'
 import { drip } from './marketplaces'
 import type { BidAcceptedLog, ItemSoldLog, PostData, TokenData } from './types'
-import { postOnX } from './x'
+import { checkAuthOnX, postOnX } from './x'
 
 const client = createPublicClient({
   chain: hyperliquid,
   transport: http(),
 })
 
+checkAuthOnX()
+
 const post = async (data: PostData) => {
-  console.log(Bun.inspect(data))
   postOnX(data)
 }
 
