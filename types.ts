@@ -50,6 +50,7 @@ export type PostData = {
   nftAddress: Hash
   tokenId: bigint
   tokenData: TokenData
+  imageData: Buffer<ArrayBufferLike>
   pricePerItem: bigint
   paymentToken: string
   buyer: Hash

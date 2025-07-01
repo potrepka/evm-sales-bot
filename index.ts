@@ -1,3 +1,4 @@
+import got from 'got'
 import {
   createPublicClient,
   getContract,
@@ -42,10 +43,12 @@ const onLogs = (logs: Log[]) => {
       args.nftAddress as Hash,
       args.tokenId as bigint,
     )
+    const imageData = await got(tokenData.image).buffer()
     const data = {
       nftAddress: args.nftAddress as Hash,
       tokenId: args.tokenId as bigint,
       tokenData,
+      imageData,
       pricePerItem: args.pricePerItem as bigint,
       paymentToken: 'HYPE',
       buyer: ((log as BidAcceptedLog).args.bidder ||

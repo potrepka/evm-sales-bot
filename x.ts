@@ -1,5 +1,5 @@
 import Bottleneck from 'bottleneck'
-import { TwitterApi } from 'twitter-api-v2'
+import { EUploadMimeType, TwitterApi } from 'twitter-api-v2'
 import { hyperliquid } from './chains'
 import { abbreviateAddress } from './helpers'
 import { drip } from './marketplaces'
@@ -40,11 +40,15 @@ const post = async (data: PostData) => {
     collectionLink,
   ]
   const text = lines.join('\n')
-  const image = data.tokenData.image
-  const mediaIds = await Promise.all([readWriteClient.v1.uploadMedia(image)])
+  const mediaId = await client.v1.uploadMedia(data.imageData, {
+    mimeType: EUploadMimeType.Png,
+  })
   const {
     data: { id },
-  } = await readWriteClient.v2.tweet({ text, media: { media_ids: mediaIds } })
+  } = await readWriteClient.v2.tweet({
+    text,
+    media: { media_ids: [mediaId] },
+  })
   const xLink = `https://x.com/${process.env.X_USERNAME}/status/${id}`
   console.log(`Posted on X: ${xLink}`)
 }
