@@ -13,7 +13,7 @@ export const hyperliquid = {
     },
   },
   blockExplorers: {
-    default: { name: 'Purrsec', url: 'https://purrsec.com' },
+    default: { name: 'HyperEVMScan', url: 'https://hyperevmscan.io' },
   },
   contracts: {
     multicall3: {
